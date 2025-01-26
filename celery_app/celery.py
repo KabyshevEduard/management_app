@@ -2,7 +2,7 @@ from celery import Celery
 import requests
 
 
-TOKEN = '7792093776:AAHFQ1VqGrCty6SO67USekTTsZrkcP9U53Q'
+TOKEN = 'SECRET'
 url = f'https://api.telegram.org/bot{TOKEN}/'
 database_url_redis = 'redis://172.18.0.4'
 
