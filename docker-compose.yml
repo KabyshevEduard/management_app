@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+
+    redis_db:
+        image: redis
+        container_name: redis_db
+        restart: unless-stopped
+        ports:
+            - 6379:6379
+        networks:
+            - default
+            - backend_network
+
+
+    db:
+        image: postgres
+        container_name: db
+        environment:
+            POSTGRES_USER: e2rd
+            POSTGRES_PASSWORD: lex2mubds
+            PGDATA: /var/lib/postgresql/data/pgdata
+        volumes:
+            - . / var/lib/postgresql/data
+        restart: unless-stopped
+        networks:
+            - default
+            - backend_network
+
+    mongo_db:
+        image: mongo
+        container_name: mongo_db
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: e2rd
+            MONGO_INITDB_ROOT_PASSWORD: lex2mubds
+        networks:
+            - default
+            - backend_network
+
+networks:
+    backend_network:
+        name: backend_network
+        driver: bridge
