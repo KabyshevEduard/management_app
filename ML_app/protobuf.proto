@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+message MessageRequest {
+    string token = 1;
+    int32 message_id = 2;
+    string text = 3;
+    int32 type_id = 4;
+    double rating = 5;
+}
+
+message PredictResponse {
+    double p = 1;
+}
+
+service PredictionService {
+    rpc MakePred(MessageRequest) returns (PredictResponse) {}
+}

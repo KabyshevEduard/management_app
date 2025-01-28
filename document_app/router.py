@@ -6,15 +6,18 @@ from fastapi import APIRouter, Request, Response, HTTPException, status, UploadF
 from typing import List, Any
 from datetime import datetime
 import ast
-import requests
 import pydantic
 from bson import ObjectId
-import aiohttp
+from ML_app.schemas import MLSchema
 
 from celery_app.celery import save_file, send_notification
 
-TOKEN = 'SECRET'
-url = f'https://api.telegram.org/bot{TOKEN}/'
+import grpc
+import ML_app.protobuf_pb2_grpc as protobuf_pb2_grpc
+from ML_app.protobuf_pb2 import MessageRequest, PredictResponse
+
+
+
 router = APIRouter(prefix='/document', tags=['Document'])
 
 
@@ -54,4 +57,19 @@ async def add_document_view(request: Request, item: str, file: UploadFile):
     notify = send_notification
     notify.delay(name, chat_title)
     
+    return {'status': 'success'}
+
+
+@router.post('/ml')
+async def send_ml(request: Request, item: MLSchema):
+    token = request.cookies.get('user_access_token')
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Not logged in')
+    
+    user_id = check_token(token)
+    async with grpc.aio.insecure_channel('localhost:50051') as channel:
+        stub = protobuf_pb2_grpc.PredictionServiceStub(channel)
+        request = MessageRequest(token=token, message_id=item.message_id, text=item.text, type_id=item.type_id, rating=item.rating)
+        response = await stub.MakePred(request)
+        print(response)
     return {'status': 'success'}
