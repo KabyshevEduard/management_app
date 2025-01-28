@@ -13,7 +13,7 @@ import aiohttp
 
 from celery_app.celery import save_file, send_notification
 
-TOKEN = '7792093776:AAHFQ1VqGrCty6SO67USekTTsZrkcP9U53Q'
+TOKEN = 'SECRET'
 url = f'https://api.telegram.org/bot{TOKEN}/'
 router = APIRouter(prefix='/document', tags=['Document'])
 
